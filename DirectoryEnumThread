@@ -1,6 +1,5 @@
-Tryhackme DirEnum 
 
-
+Tryhackme Directory Enumeration 
 
 
 import requests 
@@ -18,10 +17,14 @@ for dir in directories:
         print("Valid directory:" ,dir_enum)
 
 
-
-
 --------------------
-Improved Code - Added threading 
+# Improved Code 
+
+
+ # Using With Open instead of reading the entire file
+ # Using Session() to allow for multiple requests in the same TCP connection
+ # Added timeout to deal with unresponsive servers
+ # Added threading 
 
 
 import requests
@@ -44,3 +47,5 @@ if __name__ == '__main__':
         directories = (line.strip() for line in f)
         with ThreadPoolExecutor(max_workers=16) as executor:
             executor.map(check_directory, directories)
+            
+            
