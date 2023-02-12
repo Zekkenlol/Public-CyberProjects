@@ -1,0 +1,59 @@
+
+# Takes in a URL and directory txt file and scrapes Emails and phone numbers from URL provided and directories/files after.
+
+import re
+import requests
+
+def phoneEmailScanner(url, wordlist):
+    # Regex to find emails
+    pattern1 = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}'
+    # Regex to find Phone numbers
+    pattern2 = r'\b(\+\d{1,2}\s?)?\d{3}\W*\d{3}\W*\d{4}\b'
+
+    with open(wordlist) as f:
+        directories = f.read().splitlines()
+
+    try:
+        with requests.Session() as session:
+            siteReq = session.get(url)
+
+            results = []
+
+            match1 = re.finditer(pattern1, siteReq.text)
+            if match1:
+                results.extend(match.group() for match in match1)
+
+            match2 = re.finditer(pattern2, siteReq.text)
+            if match2:
+                results.extend(match.group() for match in match2)
+
+            for dir in directories:
+                dir_enum = f"{url}/{dir}"
+                try:
+                    r = session.get(dir_enum)
+                    r.raise_for_status()
+                except requests.exceptions.RequestException as e:
+                    print(f"An error occurred while requesting {dir_enum}: {e}")
+                    continue
+                
+                results.append(f"Valid Directory: {dir_enum}")
+
+                match3 = re.finditer(pattern1, r.text)
+                if match3:
+                    results.extend(match.group() for match in match3)
+
+                match4 = re.finditer(pattern2, r.text)
+                if match4:
+                    results.extend(match.group() for match in match4)
+
+            return results
+                
+    except requests.ConnectionError:
+        print('something went wrong')
+
+results = phoneEmailScanner('Some_URL', 'Directory_txt')
+for result in results:
+    print(result)
+    
+    
+    
