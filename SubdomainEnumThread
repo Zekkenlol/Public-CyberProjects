@@ -15,40 +15,33 @@ for sub in subdoms:
     except requests.ConnectionError:
         pass
     else:
-        print("Valid domain: ",sub_domains)  
+        print("Valid domain: ",sub_domains)
 
 
 -------------
 Improved Code
 
 
-
-
-
 import requests
 import sys
 import concurrent.futures
 
-# Create a Session object
-session = requests.Session()
+session = requests.Session()                                                # Create a Session object
 
 def check_sub_domain(sub):
-    sub = sub.strip()  # Remove leading and trailing whitespace
+    sub = sub.strip()                                                       # Remove leading and trailing whitespace
     sub_domains = f"http://{sub}.{sys.argv[1]}"
     try:
-        # Use the timeout parameter to set a time limit for the request
-        response = session.get(sub_domains, timeout=0.5)
+        response = session.get(sub_domains, timeout=0.5)                    # Use the timeout parameter to set a time limit for the request
     except requests.ConnectionError:
         pass
     else:
         print("Valid domain: ", sub_domains)
 
-# Open the file and read the lines
-with open("wordlist2.txt") as f:
-    sub_list = f.readlines()
+with open("wordlist2.txt") as file:                                         # Open the file and read the lines
+    sub_list = file.readlines()
 
-# Use ThreadPoolExecutor to perform requests in parallel
-with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
+with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:     # Use ThreadPoolExecutor to perform requests in parallel
     futures = []
     for sub in sub_list:
         futures.append(executor.submit(check_sub_domain, sub))
